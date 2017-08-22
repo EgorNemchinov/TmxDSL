@@ -25,6 +25,12 @@ fun main(args: Array<String>) {
                 tile(3)
             }
         }
+        objectgroup(name = "objects") {
+            object_(x = 40, y = 32, width = 48, height = 16)
+            object_(x = 56, y = 40, width = 48, height = 16) {
+
+            }
+        }
     }
     println(map)
 }

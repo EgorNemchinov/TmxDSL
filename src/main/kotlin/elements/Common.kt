@@ -67,3 +67,7 @@ abstract class TagWithText(tagName: String) : Tag(tagName) {
         children.add(TextElement(this))
     }
 }
+
+enum class Axis {
+    x, y;
+}

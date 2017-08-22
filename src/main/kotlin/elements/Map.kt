@@ -1,9 +1,13 @@
 package elements
 
+import java.awt.Color
+import elements.Objectgroup.DrawOrder
 /**
  * Created by Egor Nemchinov on 01.06.17.
  * SPbU, 2017
  */
+// Map is almost finished. Left to decide what
+// to do with 'nextobjectid'
 class Map: Tag("map") {
     var version: String
         get() = attributes["version"]!!
@@ -60,16 +64,36 @@ class Map: Tag("map") {
         set(value) {
             attributes["hexsidelength"] = value.toString()
         }
-    //TODO: implement attributes
-    var staggeraxis = 0
-    var staggerindex= 0
-    var backgroundcolor = 0
+
+    var staggeraxis: Axis
+        get() = Axis.valueOf(attributes["staggeraxis"]!!)
+        set(value) {
+            attributes["staggeraxis"] = value.toString()
+        }
+    enum class StaggerIndex { even, odd }
+    var staggerindex: StaggerIndex
+        get() = StaggerIndex.valueOf(attributes["staggerindex"]!!)
+        set(value) {
+            attributes["staggerindex"] = value.toString()
+        }
+
+    var backgroundcolor: Color
+        get() = Color.decode(attributes["backgroundcolor"]!!)
+        set(value) {
+            attributes["backgroundcolor"] = value.encode()
+        }
+
     //fixme: companion object to be incremented?
+    companion object {
+        var id: Int = 1
+        fun nextId(): Int = id++
+    }
     var nextobjectid: Int
         get() = attributes["nextobjectid"]!!.toInt()
         set(value) {
             attributes["nextobjectid"] = value.toString()
         }
+
 
     fun tileset(firstgid: Int, source: String? = null,  name: String, tilewidth: Int, tileheight: Int,
                 spacing: Int = 0, margin: Int = 0, tilecount: Int, columns: Int,
@@ -103,23 +127,59 @@ class Map: Tag("map") {
         }
         return layer
     }
+
+    fun objectgroup(name: String, color: Color = Color.BLACK, x: Int = 0, y: Int = 0, width: Int? = null,
+                    height: Int? = null, opacity: Float = 1f, visible: Boolean = true, offsetx: Int = 0,
+                    offsety: Int = 0, draworder: DrawOrder = DrawOrder.topdown, init: Objectgroup.() -> Unit): Objectgroup {
+        var objectgroup = initTag(Objectgroup(), init)
+        objectgroup.apply {
+            this.name = name
+            this.color = color
+            if(x != 0) this.x = x
+            if(y != 0) this.y = y
+            if(width != null) this.width = width
+            if(height != null) this.height = height
+            if(opacity != 1f) this.opacity = opacity
+            if(!visible) this.visible = visible
+            if(offsetx != 0) this.offsetx = offsetx
+            if(offsety != 0) this.offsety = offsety
+            if(draworder != DrawOrder.topdown) this.draworder = draworder
+        }
+        return objectgroup
+    }
+
+    override fun render(builder: StringBuilder, indent: String) {
+        this.nextobjectid = id
+        super.render(builder, indent)
+        val actual = builder.replace("nextobjectid=\"0\"".toRegex(), "nextobjectid=\"${Map.id}\"")
+        builder.setLength(0)
+        builder.append(actual)
+    }
 }
 
 //TODO: other properties
 fun map(version: String = "1.0", orientation: Map.Orientation, renderorder: Map.RenderOrder = Map.RenderOrder.rightDown,
-        width: Int, height: Int, tileWidth: Int, tileHeight: Int, hexsidelength: Int? = null,
+        hexsidelength: Int? = null, staggeraxis: Axis? = null, staggerindex: Map.StaggerIndex? = null,
+        width: Int, height: Int, tileWidth: Int, tileHeight: Int,  backgroundcolor: Color? = null,
         init: Map.() -> Unit): Map {
     val map = Map()
+    Map.id = 1
     map.init()
     map.apply {
         this.version = version
         this.orientation = orientation
         if(renderorder != Map.RenderOrder.rightDown)
             this.renderorder = renderorder
+        if(staggeraxis != null)
+            this.staggeraxis = staggeraxis
+        if(staggerindex != null)
+            this.staggerindex = staggerindex
         this.width = width
         this.height = height
         if(hexsidelength != null)
             this.hexsidelength = hexsidelength
+        if(backgroundcolor != null)
+            this.backgroundcolor = backgroundcolor
         this.tileWidth = tileWidth
         this.tileHeight = tileHeight
     }
