@@ -8,14 +8,14 @@ import java.awt.Color
  */
 fun main(args: Array<String>) {
     val map =
-    map(version = "1.0", orientation = Map.Orientation.orthogonal, width = 14, height = 9, tileWidth = 16, tileHeight = 16) {
+    map(version = "1.0", orientation = Map.Orientation.orthogonal, width = 20, height = 10, tileWidth = 16, tileHeight = 16) {
         tileset(firstgid = 1, name = "tiles", tilewidth = 16, tileheight = 16, tilecount = 18, columns = 9) {
             image(source = "../texturePack.png", trans = Color.BLACK, width = 100, height = 200)
         }
-        layer(name = "background", width = 14, height = 9) {
+        layer(name = "background", width = 20, height = 8) {
             data(encoding = Data.Encoding.base64) {
                 +"Adding array of IDs is coming soon."
-                +"Summer 2017."
+                +"I don't know when."
                 +"On every screen."
             }
         }
@@ -26,9 +26,15 @@ fun main(args: Array<String>) {
             }
         }
         objectgroup(name = "objects") {
-            object_(x = 40, y = 32, width = 48, height = 16)
+            object_(x = 40, y = 40, width = 48, height = 16)
+            object_(x = 56, y = 40, width = 32, height = 16) {
+                ellipse()
+            }
             object_(x = 56, y = 40, width = 48, height = 16) {
-
+                polygon(listOf(Point(0f, 0f), Point(1f, 1f), Point(0f, 2f)))
+            }
+            object_(x = 56, y = 40, width = 48, height = 16) {
+                polyline(listOf(Point(0f, 0f), Point(2.5f, 3.5f), Point(1.0f, -2.0f)))
             }
         }
     }

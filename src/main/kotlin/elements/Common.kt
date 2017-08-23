@@ -71,3 +71,9 @@ abstract class TagWithText(tagName: String) : Tag(tagName) {
 enum class Axis {
     x, y;
 }
+
+data class Point(var x: Float, var y: Float) {
+    override fun toString(): String {
+        return "$x,$y"
+    }
+}

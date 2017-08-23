@@ -67,4 +67,19 @@ class Object: Tag("object") {
             attributes["visible"] = if(value) "1" else "0"
         }
 
+    fun ellipse() {
+        val ellipse = initTag(Ellipse(), {})
+    }
+
+    fun polygon(points: List<Point>) {
+        val polygon = initTag(Polygon(), {})
+        polygon.points = points
+    }
+
+    fun polyline(points: List<Point>) {
+        val polyline = initTag(Polyline(), {})
+        polyline.points = points
+    }
+
+
 }
