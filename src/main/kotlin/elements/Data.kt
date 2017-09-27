@@ -20,17 +20,48 @@ class Data: TagWithText("data") {
         set(value) {
             attributes["compression"] = value.toString()
         }
+    var tiles: List<List<Int>>? = null
 
+    operator fun List<List<Int>>.unaryPlus() {
+        if (tiles != null) {
+            error("Tiles are already defined")
+        }
+        tiles = this
+    }
+
+    //TODO: compressions & base64
     override fun render(builder: StringBuilder, indent: String) {
         builder.append("$indent<$tagName${renderAttributes()}>\n")
-        children.map {
-            it -> when(encoding) {
-                Encoding.base64 ->
-                    Base64.getEncoder().encodeToString(it.toString().toByteArray())
-                Encoding.csv -> "" //not implemented
-                else -> it.toString()
+        //first compress, then encode
+        if (compression != Compression.none)
+            throw NotImplementedError("Compression is not implemented yet.")
+        if(tiles != null) {
+            val dataBuilder = StringBuilder()
+            var dataString = ""
+            when(encoding) {
+                Encoding.base64 -> {
+                    throw NotImplementedError("Base64 encoding is not implemented yet.")
+                }
+                Encoding.csv -> {
+                    val height = tiles!!.size
+                    val width = tiles!![0].size
+                    tiles!!.mapIndexed{rowInd, rowValues -> rowValues.mapIndexed {
+                                colInd, colValue ->
+                                dataBuilder.append(colValue)
+                                           .append(if (rowInd == height-1 && colInd == width-1) "" else ",")
+                                           .append(if (colInd == width-1) "\n" else "" )
+                        }
+                    }
+                    dataString = dataBuilder.toString()
+                }
+                Encoding.none -> {
+                    throw Exception("Defined tiles twice: XML-like and by array.")
+                }
             }
-        }.map { builder.append("$indent  $it\n") }
+            builder.append(dataString)
+        } else {
+            children.map { builder.append("$indent  $it\n") }
+        }
         builder.append("$indent</$tagName>\n")
     }
 

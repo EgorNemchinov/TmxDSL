@@ -46,16 +46,16 @@ class Map: Tag("map") {
             attributes["height"] = value.toString()
         }
 
-    var tileWidth: Int
-        get() = attributes["tileWidth"]!!.toInt()
+    var tilewidth: Int
+        get() = attributes["tilewidth"]!!.toInt()
         set(value) {
-            attributes["tileWidth"] = value.toString()
+            attributes["tilewidth"] = value.toString()
         }
 
-    var tileHeight: Int
-        get() = attributes["tileHeight"]!!.toInt()
+    var tileheight: Int
+        get() = attributes["tileheight"]!!.toInt()
         set(value) {
-            attributes["tileHeight"] = value.toString()
+            attributes["tileheight"] = value.toString()
         }
     //Only for hexagonal maps.
     // Determines the width or height (depending on the staggered axis) of the tile's edge, in pixels.
@@ -149,6 +149,7 @@ class Map: Tag("map") {
     }
 
     override fun render(builder: StringBuilder, indent: String) {
+        builder.insert(0, "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n")
         this.nextobjectid = id
         super.render(builder, indent)
         val actual = builder.replace("nextobjectid=\"0\"".toRegex(), "nextobjectid=\"${Map.id}\"")
@@ -160,7 +161,7 @@ class Map: Tag("map") {
 //TODO: other properties
 fun map(version: String = "1.0", orientation: Map.Orientation, renderorder: Map.RenderOrder = Map.RenderOrder.rightDown,
         hexsidelength: Int? = null, staggeraxis: Axis? = null, staggerindex: Map.StaggerIndex? = null,
-        width: Int, height: Int, tileWidth: Int, tileHeight: Int,  backgroundcolor: Color? = null,
+        width: Int, height: Int, tilewidth: Int, tileheight: Int,  backgroundcolor: Color? = null,
         init: Map.() -> Unit): Map {
     val map = Map()
     Map.id = 1
@@ -180,8 +181,8 @@ fun map(version: String = "1.0", orientation: Map.Orientation, renderorder: Map.
             this.hexsidelength = hexsidelength
         if(backgroundcolor != null)
             this.backgroundcolor = backgroundcolor
-        this.tileWidth = tileWidth
-        this.tileHeight = tileHeight
+        this.tilewidth = tilewidth
+        this.tileheight = tileheight
     }
     return map
 }
