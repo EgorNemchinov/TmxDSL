@@ -1,42 +1,49 @@
 import elements.*
 import elements.Map
 import java.awt.Color
+import java.io.File
+import java.io.FileWriter
+import java.util.*
 
 /**
  * Created by Egor Nemchinov on 04.06.17.
  * SPbU, 2017
  */
 fun main(args: Array<String>) {
+    val randomizer = Random()
+    var tiles = List(10, {List(15, {0})})
+    tiles = tiles.map{it.map{ randomizer.nextInt(2) + 1} }
     val map =
-    map(version = "1.0", orientation = Map.Orientation.orthogonal, width = 20, height = 10, tileWidth = 16, tileHeight = 16) {
-        tileset(firstgid = 1, name = "tiles", tilewidth = 16, tileheight = 16, tilecount = 18, columns = 9) {
-            image(source = "../texturePack.png", trans = Color.BLACK, width = 100, height = 200)
+    map(version = "1.0", orientation = Map.Orientation.orthogonal, width = 15, height = 10,
+            tilewidth = 20, tileheight = 20) {
+        tileset(firstgid = 1, name = "tiles", tilewidth = 20, tileheight = 20, tilecount = 2, columns = 2) {
+            image(source = "texturePack.png", trans = Color.RED, width = 40, height = 20)
         }
-        layer(name = "background", width = 20, height = 8) {
-            data(encoding = Data.Encoding.base64) {
-                +"Adding array of IDs is coming soon."
-                +"I don't know when."
-                +"On every screen."
+        layer(name = "tiles", width = 15, height = 10) {
+            data(encoding = Data.Encoding.csv) {
+                +tiles
             }
         }
-        layer(name = "frontground", width = 14, height = 9) {
-            data {
-                tile(1)
-                tile(3)
-            }
-        }
-        objectgroup(name = "objects") {
-            object_(x = 40, y = 40, width = 48, height = 16)
-            object_(x = 56, y = 40, width = 32, height = 16) {
+        objectgroup(name = "objects", color = Color.RED) {
+            object_(x = 40, y = 40, width = 60, height = 60) {
                 ellipse()
             }
-            object_(x = 56, y = 40, width = 48, height = 16) {
-                polygon(listOf(Point(0f, 0f), Point(1f, 1f), Point(0f, 2f)))
+            object_(x = 180, y = 40, width = 60, height = 60) {
+                ellipse()
             }
-            object_(x = 56, y = 40, width = 48, height = 16) {
-                polyline(listOf(Point(0f, 0f), Point(2.5f, 3.5f), Point(1.0f, -2.0f)))
+            object_(x = 100, y = 140, width = 80, height = 40)
+            object_(x = 18, y = 64) {
+                polygon(listOf(Point(0f, 0f), Point(62f, -44f), Point(222f, -44f),
+                               Point(262f, 16f), Point(202f, 136f), Point(62f, 136f)))
+            }
+            object_(x = 60, y = 20) {
+                polyline(listOf(Point(0f, 0f), Point(60f, 23f), Point(120f, 20f),
+                                Point(160f, -20f)))
             }
         }
     }
-    println(map)
+//    println(map)
+    val output = File("${System.getProperty("user.dir")}/src/main/kotlin/resources/map.tmx")
+
+    output.writeText(map.toString())
 }
