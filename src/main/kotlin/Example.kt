@@ -10,16 +10,27 @@ import java.util.*
  * SPbU, 2017
  */
 fun main(args: Array<String>) {
+    val mapWidth = 15
+    val mapHeight = 10  
+    val tilePack = hashMapOf<String, Any>(
+            "tilewidth" to 20,"tileheight" to 20, "count" to 2,
+            "columns" to 2, "trans" to Color.RED, "path" to "texturePack.png")
+
     val randomizer = Random()
-    var tiles = List(10, {List(15, {0})})
+    var tiles = List(mapHeight, {List(mapWidth, {0})})
     tiles = tiles.map{it.map{ randomizer.nextInt(2) + 1} }
+
     val map =
-    map(version = "1.0", orientation = Map.Orientation.orthogonal, width = 15, height = 10,
-            tilewidth = 20, tileheight = 20) {
-        tileset(firstgid = 1, name = "tiles", tilewidth = 20, tileheight = 20, tilecount = 2, columns = 2) {
-            image(source = "texturePack.png", trans = Color.RED, width = 40, height = 20)
+    map(orientation = Map.Orientation.orthogonal, width = mapWidth, height = mapHeight,
+            tilewidth = tilePack["tilewidth"] as Int, tileheight = tilePack["tileheight"] as Int) {
+        tileset(firstgid = 1, name = "tiles", tilewidth = tilePack["tilewidth"] as Int,
+                tileheight = tilePack["tilewidth"] as Int, tilecount = tilePack["count"] as Int,
+                columns = tilePack["count"] as Int) {
+            image(source = tilePack["path"] as String, trans = tilePack["trans"] as Color,
+                    width = (tilePack["tilewidth"] as Int) * (tilePack["count"] as Int),
+                    height = tilePack["tileheight"] as Int)
         }
-        layer(name = "tiles", width = 15, height = 10) {
+        layer(name = "tiles", width = mapWidth, height = mapHeight) {
             data(encoding = Data.Encoding.csv) {
                 +tiles
             }
@@ -42,8 +53,8 @@ fun main(args: Array<String>) {
             }
         }
     }
-//    println(map)
-    val output = File("${System.getProperty("user.dir")}/src/main/kotlin/resources/map.tmx")
+    println(map)
+    val output = File("${System.getProperty("user.dir")}/src/main/resources/map.tmx")
 
     output.writeText(map.toString())
 }
